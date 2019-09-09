@@ -3,9 +3,41 @@
 <head>
 	<title>Идеальный газ</title>
 	<meta charset="utf-8">
+	<style type="text/css">
+
+		.container {
+			float: right;
+		}
+
+		.slidecontainer {
+			width: 70%;
+			position: absolute;
+			right: 5%;
+			top: 10%;
+		}
+
+		.slider {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 30%;
+			height: 25px;
+			background: #d3d3d3;
+			outline: none;
+			float: right;
+		}
+	</style>
 </head>
 <body>
 	<script type="text/javascript" src = "three.js"></script>
-	<script type="text/javascript" src = "app.js"></script>
+	<script type="text/javascript" src = "OrbitControls.js"></script>
+	<div class="container">
+		<center>Settings</center> 
+		<div class = "slidecontainer">
+			<input type="range" min = "1" max = "2000" value = "10" class = "slider" id = "rangeOfParticles">
+	</div>
+	<center>Num of particles</center>
+	<center id = "numOfParticles"></center>
+</div>
 </body>
+<script type="text/javascript" src = "app.js"></script>
 </html>
