@@ -173,12 +173,12 @@ function initImpulses() {
     }, 50);
 
     const timerVisId = setInterval(() => {
-        document.getElementById("elem1").value = pressures[0];
-        document.getElementById("elem2").value = pressures[1];
-        document.getElementById("elem3").value = pressures[2];
-        document.getElementById("elem4").value = pressures[3];
-        document.getElementById("elem5").value = pressures[4];
-        document.getElementById("elem6").value = pressures[5];
+        document.getElementById("elem1").innerHTML = pressures[0];
+        document.getElementById("elem2").innerHTML = pressures[1];
+        document.getElementById("elem3").innerHTML = pressures[2];
+        document.getElementById("elem4").innerHTML = pressures[3];
+        document.getElementById("elem5").innerHTML = pressures[4];
+        document.getElementById("elem6").innerHTML = pressures[5];
     } ,50);
 }
 
