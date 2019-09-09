@@ -27,13 +27,13 @@ function Particle() {
 
     this.update = function() {
         this.mesh.position.add(this.velocity);
-        if ((this.mesh.position.x > 30) || (this.mesh.position.x < -20)) {
+        if ((this.mesh.position.x > 25) || (this.mesh.position.x < -15)) {
             this.velocity.x *= -1;
         }
-        if ((this.mesh.position.y > 30) || (this.mesh.position.y < -20)) {
+        if ((this.mesh.position.y > 25) || (this.mesh.position.y < -10)) {
             this.velocity.y *= -1;
         }
-        if ((this.mesh.position.z > 50) || (this.mesh.position.z < -20)) {
+        if ((this.mesh.position.z > 50) || (this.mesh.position.z < -10)) {
             this.velocity.z *= -1;
         }
     }
@@ -53,11 +53,14 @@ function createBoxes() {
     var uMesh = new THREE.Mesh(udWall);
     var dMesh = new THREE.Mesh(udWall);
 
+    var topMesh = new THREE.Mesh(floor);
+
     floorMesh.position.set(0, 0, 0);
     rlMesh.position.set(30, 20, 0);
     lMesh.position.set(-30, 20, 0);
     uMesh.position.set(0, 20, -20);
     dMesh.position.set(0, 20, 20);
+    topMesh.position.set(0, 40, 0);
 
     floorMesh.updateMatrix(); // as needed
     singleGeometry.merge(floorMesh.geometry, floorMesh.matrix);
@@ -74,6 +77,9 @@ function createBoxes() {
     dMesh.updateMatrix();
     singleGeometry.merge(dMesh.geometry, dMesh.matrix);
 
+    topMesh.updateMatrix();
+    singleGeometry.merge(topMesh.geometry, topMesh.matrix);
+
     var material = new THREE.MeshPhongMaterial({
         color: 0xFF0000,
         transparent: true
@@ -82,7 +88,8 @@ function createBoxes() {
     var mesh = new THREE.Mesh(singleGeometry, material);
     scene.add(mesh);
 
-    mesh.position.set(0, 0, 15);
+    mesh.position.set(0, -15, 15);
+    mesh.scale.set(1.0, 1.1, 1.7);
 }
 
 function createLight() {
@@ -107,7 +114,7 @@ function initInput() {
     rangeInput.value = NUM_OF_PARTICLES;
     labelNumOfParticles.innerHTML = rangeInput.value;
 
-    rangeInput.oninput = function() {
+    rangeInput.onchange = function() {
         if (NUM_OF_PARTICLES < rangeInput.value) {
             for (let i = 0; i < rangeInput.value - NUM_OF_PARTICLES; i++) {
                 let particle = new Particle();
