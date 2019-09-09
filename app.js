@@ -15,9 +15,11 @@ camera.position.z = 200;
 
 let particles = [];
 
+let impulses = [0, 0, 0, 0, 0, 0];
+let pressures = [0, 0, 0, 0, 0, 0];
 
 function Particle() {
-    this.mass = 0.000001;
+    this.mass = 0.1;
     this.velocity = new THREE.Vector3(10 * Math.random(), 10 * Math.random(), 10 * Math.random());
 
     this.mesh = new THREE.Mesh(particleGeometry, particleMaterial);
@@ -25,16 +27,40 @@ function Particle() {
 
     scene.add(this.mesh);
 
+    this.impulse = function(v) {
+        return Math.abs(this.mass * v)
+    }
+
     this.update = function() {
         this.mesh.position.add(this.velocity);
-        if ((this.mesh.position.x > 25) || (this.mesh.position.x < -15)) {
+        if (this.mesh.position.x > 25) {
             this.velocity.x *= -1;
+            impulses[0] += this.impulse(this.velocity.x);
         }
-        if ((this.mesh.position.y > 25) || (this.mesh.position.y < -10)) {
+
+        if (this.mesh.position.x < -15) {
+            this.velocity.x *= -1;
+            impulses[1] += this.impulse(this.velocity.x);
+        }
+
+        if (this.mesh.position.y > 25) {
             this.velocity.y *= -1;
+            impulses[2] += this.impulse(this.velocity.y);
         }
-        if ((this.mesh.position.z > 50) || (this.mesh.position.z < -10)) {
+
+        if (this.mesh.position.y < -10) {
+            this.velocity.y *= -1;
+            impulses[3] += this.impulse(this.velocity.y);
+        }
+
+        if (this.mesh.position.z > 50) {
             this.velocity.z *= -1;
+            impulses[4] += this.impulse(this.velocity.z);
+        }
+
+        if (this.mesh.position.z < -10) {
+            this.velocity.z *= -1;
+            impulses[5] += this.impulse(this.velocity.z);
         }
     }
 }
@@ -138,13 +164,29 @@ function createParticles() {
     }
 }
 
+function initImpulses() {
+    const timerId = setInterval(() => {
+        for (let i = 0; i < 6; i++) {
+            pressures[i] = impulses[i] / 50 / 25;
+            impulses[i] = 0;
+        }
+    }, 50);
 
+    const timerVisId = setInterval(() => {
+        document.getElementById("elem1").value = pressures[0];
+        document.getElementById("elem2").value = pressures[1];
+        document.getElementById("elem3").value = pressures[2];
+        document.getElementById("elem4").value = pressures[3];
+        document.getElementById("elem5").value = pressures[4];
+        document.getElementById("elem6").value = pressures[5];
+    } ,50);
+}
 
 createBoxes();
 createLight();
 createParticles();
 initInput();
-
+initImpulses();
 
 requestAnimationFrame(function animate() {
     requestAnimationFrame(animate);
