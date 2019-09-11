@@ -1,4 +1,5 @@
 var NUM_OF_PARTICLES = 1;
+let g = -0.001;
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
@@ -17,6 +18,41 @@ let particles = [];
 
 let impulses = [0, 0, 0, 0, 0, 0];
 let pressures = [0, 0, 0, 0, 0, 0];
+
+let topMesh;
+
+function TopMesh() {
+
+    this.mass = 100;
+
+    this.velocity = new THREE.Vector3(0,0,0);
+    this.acceleration = new THREE.Vector3(0, g, 0);
+
+    this.floor = new THREE.BoxGeometry(50, 10, 50);
+
+    this.material = new THREE.MeshPhongMaterial({
+        color: 0x00FF00,
+        transparent: true
+    });
+    this.material.opacity = 0.7;
+
+    this.mesh = new THREE.Mesh(this.floor, this.material);
+    this.mesh.position.set(0, 40, 15);
+
+    this.update  = function() {
+        this.velocity.add(this.acceleration);
+        this.mesh.position.add(this.velocity);
+        if (this.mesh.position.y < 30) {
+            this.velocity.set(0,0,0);
+        }
+        this.acceleration.set(0, g + pressures[2] * 25 / this.mass, 0)
+    }
+
+    //this.mesh.position.set(0, -15, 15);
+    this.mesh.scale.set(1.0, 1.1, 1.7);
+
+    scene.add(this.mesh);
+}
 
 function Particle() {
     this.mass = 0.1;
@@ -43,7 +79,7 @@ function Particle() {
             impulses[1] += this.impulse(this.velocity.x);
         }
 
-        if (this.mesh.position.y > 25) {
+        if (this.mesh.position.y > topMesh.mesh.position.y) {
             this.velocity.y *= -1;
             impulses[2] += this.impulse(this.velocity.y);
         }
@@ -79,14 +115,11 @@ function createBoxes() {
     var uMesh = new THREE.Mesh(udWall);
     var dMesh = new THREE.Mesh(udWall);
 
-    var topMesh = new THREE.Mesh(floor);
-
     floorMesh.position.set(0, 0, 0);
     rlMesh.position.set(30, 20, 0);
     lMesh.position.set(-30, 20, 0);
     uMesh.position.set(0, 20, -20);
     dMesh.position.set(0, 20, 20);
-    topMesh.position.set(0, 40, 0);
 
     floorMesh.updateMatrix(); // as needed
     singleGeometry.merge(floorMesh.geometry, floorMesh.matrix);
@@ -103,8 +136,7 @@ function createBoxes() {
     dMesh.updateMatrix();
     singleGeometry.merge(dMesh.geometry, dMesh.matrix);
 
-    topMesh.updateMatrix();
-    singleGeometry.merge(topMesh.geometry, topMesh.matrix);
+    //singleGeometry.merge(topMesh.geometry, topMesh.matrix);
 
     var material = new THREE.MeshPhongMaterial({
         color: 0xFF0000,
@@ -113,6 +145,8 @@ function createBoxes() {
     material.opacity = 0.5;
     var mesh = new THREE.Mesh(singleGeometry, material);
     scene.add(mesh);
+
+    topMesh = new TopMesh();
 
     mesh.position.set(0, -15, 15);
     mesh.scale.set(1.0, 1.1, 1.7);
@@ -124,6 +158,7 @@ function createLight() {
     light.position.set(0.75, 100, 0.25);
     scene.add(light);
 }
+
 
 function initInput() {
     let controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -196,5 +231,6 @@ requestAnimationFrame(function animate() {
         if (particles[i])
             particles[i].update();
     }
+    topMesh.update();
     renderer.render(scene, camera);
 })
