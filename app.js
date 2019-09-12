@@ -23,7 +23,7 @@ let topMesh;
 
 function TopMesh() {
 
-    this.mass = 100;
+    this.mass = 200;
 
     this.velocity = new THREE.Vector3(0,0,0);
     this.acceleration = new THREE.Vector3(0, g, 0);
@@ -37,14 +37,14 @@ function TopMesh() {
     this.material.opacity = 0.7;
 
     this.mesh = new THREE.Mesh(this.floor, this.material);
-    this.mesh.position.set(0, 40, 15);
+    this.mesh.position.set(0, 45, 15);
 
     this.update  = function() {
         this.velocity.add(this.acceleration);
         this.mesh.position.add(this.velocity);
-        if (this.mesh.position.y < 30) {
-            this.velocity.set(0,0,0);
-        }
+     //if (this.mesh.position.y < 40) {
+       // this.velocity.set(0,0,0);
+    //} 
         this.acceleration.set(0, g + pressures[2] * 25 / this.mass, 0)
     }
 
@@ -79,7 +79,7 @@ function Particle() {
             impulses[1] += this.impulse(this.velocity.x);
         }
 
-        if (this.mesh.position.y > topMesh.mesh.position.y) {
+        if (this.mesh.position.y > topMesh.mesh.position.y - 10) {
             this.velocity.y *= -1;
             impulses[2] += this.impulse(this.velocity.y);
         }
@@ -170,25 +170,29 @@ function initInput() {
         renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
     }, false);
 
-    const rangeInput = document.getElementById('rangeOfParticles');
+    const rangeInput = document.getElementById('rangeOfMass');
     const labelNumOfParticles = document.getElementById('numOfParticles');
-    rangeInput.value = NUM_OF_PARTICLES;
-    labelNumOfParticles.innerHTML = rangeInput.value;
+    const buttonSubmit = document.getElementById('submitNumOfParticles');
+    const particlesInput = document.getElementById('inputOfParticles')
+    rangeInput.value = topMesh.mass;
+    labelNumOfParticles.innerHTML = NUM_OF_PARTICLES;
 
     rangeInput.onchange = function() {
-        if (NUM_OF_PARTICLES < rangeInput.value) {
-            for (let i = 0; i < rangeInput.value - NUM_OF_PARTICLES; i++) {
-                let particle = new Particle();
-                particles.push(particle);
-            }
-        } else {
-            for (let i = 0; i < NUM_OF_PARTICLES - rangeInput.value; i++) {
-                let particle = particles.pop();
-                scene.remove(particle.mesh);
-            }
-        }
-        NUM_OF_PARTICLES = rangeInput.value;
+        topMesh.mass = rangeInput.value;
+    }
+
+    buttonSubmit.onclick = function() {
+        removeAllParticles();
+        NUM_OF_PARTICLES = particlesInput.value;
         labelNumOfParticles.innerHTML = NUM_OF_PARTICLES;
+        createParticles();
+    }
+}
+
+function removeAllParticles() {
+    for (let i = particles.length - 1; i > 0; i--) {
+        scene.remove(particles[i].mesh);
+        particles[i] = undefined;
     }
 }
 

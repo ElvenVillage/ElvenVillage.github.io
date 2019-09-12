@@ -21,6 +21,8 @@
 			top: 40%;
 		}
 
+		
+
 		.slider {
 			-webkit-appearance: none;
 			appearance: none;
@@ -36,12 +38,18 @@
 	<script type="text/javascript" src = "three.js"></script>
 	<script type="text/javascript" src = "OrbitControls.js"></script>
 	<div class="container">
-		<center>Settings</center> 
+		<center>Параметры</center> 
 		<div class = "slidecontainer">
-			<input type="range" min = "1" max = "2000" value = "10" class = "slider" id = "rangeOfParticles">
+			<p style="position: absolute; right: 5%; top: 25%"> Масса поршня </p>
+			<input type="range" min = "1" max = "2000" value = "10" class = "slider" id = "rangeOfMass">
 	</div>
-	<center>Num of particles</center>
+	<center>Число частиц</center>
 	<center id = "numOfParticles"></center>
+	<center style = "position: absolute; right: 5%; top: 60%"> <p> 
+		Изменить число частиц
+	</p><input type="text" id = "inputOfParticles">
+		<input type="button" value="Submit" id="submitNumOfParticles"> 
+	 </center>
 	<input type = "text" id = "elem1"><br>
 	<input type="text" id = "elem2"><br>
 	<input type="text" id = "elem3"><br>
