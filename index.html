@@ -1,62 +1,39 @@
-<!DOCTYPE html>
 <html>
-<head>
-	<title>Идеальный газ</title>
-	<meta charset="utf-8">
-	<style type="text/css">
-        
-        body {
-        	font-family: sans-serif;
-        	font-size: large;
-        }
-
-		.container {
-			float: right;
-		}
-
-		.slidecontainer {
-			width: 70%;
-			position: absolute;
-			right: 5%;
-			top: 40%;
-		}
-
-		
-
-		.slider {
-			-webkit-appearance: none;
-			appearance: none;
-			width: 30%;
-			height: 25px;
-			background: #d3d3d3;
-			outline: none;
-			float: right;
-		}
-	</style>
-</head>
-<body>
-	<script type="text/javascript" src = "three.js"></script>
-	<script type="text/javascript" src = "OrbitControls.js"></script>
-	<div class="container">
-		<center>Параметры</center> 
-		<div class = "slidecontainer">
-			<p style="position: absolute; right: 5%; top: 25%"> Масса поршня </p>
-			<input type="range" min = "1" max = "2000" value = "10" class = "slider" id = "rangeOfMass">
-	</div>
-	<center>Число частиц</center>
-	<center id = "numOfParticles"></center>
-	<center style = "position: absolute; right: 5%; top: 60%"> <p> 
-		Изменить число частиц
-	</p><input type="text" id = "inputOfParticles">
-		<input type="button" value="Submit" id="submitNumOfParticles"> 
-	 </center>
-	<input type = "text" id = "elem1"><br>
-	<input type="text" id = "elem2"><br>
-	<input type="text" id = "elem3"><br>
-	<input type="text" id = "elem4"><br>
-	<input type="text" id = "elem5"><br>
-	<input type="text" id = "elem6"><br>
-</div>
-</body>
-<script type="text/javascript" src = "app.js"></script>
+	<head>
+		<title>Идеальный газ</title>
+		<meta charset="utf-8">
+		<style>
+			body {
+				font-family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+				font-size: large;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="width: 20%; float: right; top:10%">
+			<p>Параметры</p>
+			<div>
+			    <p>Число частиц</p>
+			    <p id = "numOfParticles"></p>
+			    <input type="text" id="inputOfParticles"><br>
+			    <input type="button" id="submitNumOfParticles" value="Submit">
+			</div>
+			<div>
+				<p>Масса поршня</p>
+				<input type="range" min = "1" max="100" value="50" id="rangeOfMass">
+			</div>
+			<div>
+				<p>Давление на стенки</p>
+				<input type="text" id="elem1"><br>
+				<input type="text" id="elem2"><br>
+				<input type="text" id="elem3"><br>
+				<input type="text" id="elem4"><br>
+				<input type="text" id="elem5"><br>
+				<input type="text" id="elem6"><br>
+			</div>
+		</div>
+		<script src = "three.js"></script>
+		<script src = "OrbitControls.js"></script>
+		<script src = "app.js"></script>
+	</body>
 </html>

@@ -25,7 +25,7 @@ function TopMesh() {
 
     this.mass = 200;
 
-    this.velocity = new THREE.Vector3(0,0,0);
+    this.velocity = new THREE.Vector3(0, 0, 0);
     this.acceleration = new THREE.Vector3(0, g, 0);
 
     this.floor = new THREE.BoxGeometry(50, 10, 50);
@@ -39,17 +39,19 @@ function TopMesh() {
     this.mesh = new THREE.Mesh(this.floor, this.material);
     this.mesh.position.set(0, 45, 15);
 
-    this.update  = function() {
+    this.update = function () {
         this.velocity.add(this.acceleration);
         this.mesh.position.add(this.velocity);
-     //if (this.mesh.position.y < 40) {
-       // this.velocity.set(0,0,0);
-    //} 
-        this.acceleration.set(0, g + pressures[2] * 25 / this.mass, 0)
+
+        if (this.mesh.position.y < 20) {
+            this.acceleration.set(0, pressures[2] * 25 / this.mass, 0);
+        } else {
+            this.acceleration.set(0, g + pressures[2] * 25 / this.mass, 0)
+        }
     }
 
     //this.mesh.position.set(0, -15, 15);
-    this.mesh.scale.set(1.0, 1.1, 1.7);
+    this.mesh.scale.set(0.9, 1.0, 1.5);
 
     scene.add(this.mesh);
 }
@@ -63,11 +65,11 @@ function Particle() {
 
     scene.add(this.mesh);
 
-    this.impulse = function(v) {
+    this.impulse = function (v) {
         return Math.abs(this.mass * v)
     }
 
-    this.update = function() {
+    this.update = function () {
         this.mesh.position.add(this.velocity);
         if (this.mesh.position.x > 25) {
             this.velocity.x *= -1;
@@ -121,10 +123,10 @@ function createBoxes() {
     uMesh.position.set(0, 20, -20);
     dMesh.position.set(0, 20, 20);
 
-    floorMesh.updateMatrix(); // as needed
+    floorMesh.updateMatrix();
     singleGeometry.merge(floorMesh.geometry, floorMesh.matrix);
 
-    rlMesh.updateMatrix(); // as needed
+    rlMesh.updateMatrix();
     singleGeometry.merge(rlMesh.geometry, rlMesh.matrix);
 
     lMesh.updateMatrix();
@@ -159,6 +161,20 @@ function createLight() {
     scene.add(light);
 }
 
+function removeAllParticles() {
+    while (particles.length > 0) {
+        let particle = particles.pop();
+        scene.remove(particle.mesh);
+    }
+}
+
+function createParticles() {
+    for (let i = 0; i < NUM_OF_PARTICLES; i++) {
+        let particle = new Particle();
+        particles.push(particle);
+    }
+}
+
 
 function initInput() {
     let controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -177,29 +193,15 @@ function initInput() {
     rangeInput.value = topMesh.mass;
     labelNumOfParticles.innerHTML = NUM_OF_PARTICLES;
 
-    rangeInput.onchange = function() {
+    rangeInput.onchange = function () {
         topMesh.mass = rangeInput.value;
     }
 
-    buttonSubmit.onclick = function() {
+    buttonSubmit.onclick = function () {
         removeAllParticles();
         NUM_OF_PARTICLES = particlesInput.value;
         labelNumOfParticles.innerHTML = NUM_OF_PARTICLES;
         createParticles();
-    }
-}
-
-function removeAllParticles() {
-    for (let i = particles.length - 1; i > 0; i--) {
-        scene.remove(particles[i].mesh);
-        particles[i] = undefined;
-    }
-}
-
-function createParticles() {
-    for (let i = 0; i < NUM_OF_PARTICLES; i++) {
-        let particle = new Particle();
-        particles.push(particle);
     }
 }
 
@@ -218,7 +220,7 @@ function initImpulses() {
         document.getElementById("elem4").value = pressures[3];
         document.getElementById("elem5").value = pressures[4];
         document.getElementById("elem6").value = pressures[5];
-    } ,50);
+    }, 50);
 }
 
 createBoxes();
