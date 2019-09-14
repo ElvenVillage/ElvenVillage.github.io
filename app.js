@@ -16,6 +16,14 @@ camera.position.z = 200;
 
 let particles = [];
 
+let labels = []
+
+function initLabels() {
+    for (let i = 1; i < 8; i++) {
+        labels.push(document.getElementById("elem" + i));
+    }
+}
+
 let impulses = [0, 0, 0, 0, 0, 0];
 let pressures = [0, 0, 0, 0, 0, 0];
 
@@ -36,6 +44,8 @@ function TopMesh() {
     });
     this.material.opacity = 0.7;
 
+    this.flag = false;
+
     this.mesh = new THREE.Mesh(this.floor, this.material);
     this.mesh.position.set(0, 45, 15);
 
@@ -43,15 +53,20 @@ function TopMesh() {
         this.velocity.add(this.acceleration);
         this.mesh.position.add(this.velocity);
 
-        if (this.mesh.position.y < 20) {
+        if (this.mesh.position.y < 30) {
+            if (!this.flag) {
+                this.flag = true;
+                this.velocity.set(0, 0, 0);
+            }
             this.acceleration.set(0, pressures[2] * 25 / this.mass, 0);
         } else {
             this.acceleration.set(0, g + pressures[2] * 25 / this.mass, 0)
+            this.flag = false;
         }
     }
 
     //this.mesh.position.set(0, -15, 15);
-    this.mesh.scale.set(0.9, 1.0, 1.5);
+    this.mesh.scale.set(0.9, 0.7, 1.0);
 
     scene.add(this.mesh);
 }
@@ -214,18 +229,17 @@ function initImpulses() {
     }, 50);
 
     const timerVisId = setInterval(() => {
-        document.getElementById("elem1").value = pressures[0];
-        document.getElementById("elem2").value = pressures[1];
-        document.getElementById("elem3").value = pressures[2];
-        document.getElementById("elem4").value = pressures[3];
-        document.getElementById("elem5").value = pressures[4];
-        document.getElementById("elem6").value = pressures[5];
+        for (let i = 0; i < 7; i++) {
+            labels[i].value = pressures[i];
+        }
+        labels[6].value = pressures.reduce((a, b) => (a + b)) / pressures.length;
     }, 50);
 }
 
 createBoxes();
 createLight();
 createParticles();
+initLabels();
 initInput();
 initImpulses();
 

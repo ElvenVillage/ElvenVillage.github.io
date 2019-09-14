@@ -1,39 +1,46 @@
 <html>
-	<head>
-		<title>Идеальный газ</title>
-		<meta charset="utf-8">
-		<style>
-			body {
-				font-family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
-				font-size: large;
-			}
-		</style>
-	</head>
-	<body>
-		<div style="width: 20%; float: right; top:10%">
-			<p>Параметры</p>
-			<div>
-			    <p>Число частиц</p>
-			    <p id = "numOfParticles"></p>
-			    <input type="text" id="inputOfParticles"><br>
-			    <input type="button" id="submitNumOfParticles" value="Submit">
-			</div>
-			<div>
-				<p>Масса поршня</p>
-				<input type="range" min = "1" max="100" value="50" id="rangeOfMass">
-			</div>
-			<div>
-				<p>Давление на стенки</p>
-				<input type="text" id="elem1"><br>
-				<input type="text" id="elem2"><br>
-				<input type="text" id="elem3"><br>
-				<input type="text" id="elem4"><br>
-				<input type="text" id="elem5"><br>
-				<input type="text" id="elem6"><br>
-			</div>
+
+<head>
+	<title>Идеальный газ</title>
+	<meta charset="utf-8">
+	<style>
+		body {
+			font-family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+			font-size: large;
+		}
+	</style>
+</head>
+
+<body>
+	<div style="width: 20%; float: right; top:10%">
+		<p>Параметры</p>
+		<div>
+			<p>Число частиц</p>
+			<p id="numOfParticles"></p>
+			<input type="text" id="inputOfParticles"><br>
+			<input type="button" id="submitNumOfParticles" value="Submit">
 		</div>
-		<script src = "three.js"></script>
-		<script src = "OrbitControls.js"></script>
-		<script src = "app.js"></script>
-	</body>
+		<div>
+			<p>Масса поршня</p>
+			<input type="range" min="1" max="100" value="50" id="rangeOfMass">
+		</div>
+		<div>
+			<p>Давление на стенки</p>
+			<input type="text" id="elem1"><br>
+			<input type="text" id="elem2"><br>
+			<input type="text" id="elem3"><br>
+			<input type="text" id="elem4"><br>
+			<input type="text" id="elem5"><br>
+			<input type="text" id="elem6"><br>
+		</div>
+		<div>
+			<p>Среднее давление</p>
+			<input type="text" id="elem7"><br>
+		</div>
+	</div>
+	<script src="three.js"></script>
+	<script src="OrbitControls.js"></script>
+	<script src="app.js"></script>
+</body>
+
 </html>
