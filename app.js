@@ -215,8 +215,12 @@ function initInput() {
     buttonSubmit.onclick = function () {
         removeAllParticles();
         NUM_OF_PARTICLES = particlesInput.value;
-        labelNumOfParticles.innerHTML = NUM_OF_PARTICLES;
         createParticles();
+    }
+
+    const rangeOfAc = document.getElementById("rangeOfAc");
+    rangeOfAc.onchange = function () {
+        g = this.value / 1000 * (-1);
     }
 }
 
