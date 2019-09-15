@@ -16,7 +16,9 @@ camera.position.z = 200;
 
 let particles = [];
 
-let labels = []
+let labels = [];
+
+let colliders = [];
 
 function initLabels() {
     for (let i = 1; i < 8; i++) {
@@ -47,21 +49,27 @@ function TopMesh() {
     this.flag = false;
 
     this.mesh = new THREE.Mesh(this.floor, this.material);
-    this.mesh.position.set(0, 45, 15);
+    this.mesh.position.set(0, 45, 0);
+
+    this.collisionBox = new THREE.Box3().setFromObject(this.mesh);
+    colliders.push(this.collisionBox);
 
     this.update = function () {
         this.velocity.add(this.acceleration);
         this.mesh.position.add(this.velocity);
+        this.collisionBox.setFromObject(this.mesh);
 
-        if (this.mesh.position.y < 30) {
-            if (!this.flag) {
-                this.flag = true;
-                this.velocity.set(0, 0, 0);
+        for (let i = 0; i < 5; i++) {
+            if (colliders[i].intersectsBox(this.collisionBox)) {
+                if (!this.flag) {
+                    this.flag = true;
+                    this.velocity.set(0, 0, 0);
+                }
+                this.acceleration.set(0, pressures[2] * 25 / this.mass, 0);
+            } else {
+                this.acceleration.set(0, pressures[2] * 25 / this.mass + g, 0);
+                this.flag = false;
             }
-            this.acceleration.set(0, pressures[2] * 25 / this.mass, 0);
-        } else {
-            this.acceleration.set(0, g + pressures[2] * 25 / this.mass, 0)
-            this.flag = false;
         }
     }
 
@@ -76,7 +84,8 @@ function Particle() {
     this.velocity = new THREE.Vector3(10 * Math.random(), 10 * Math.random(), 10 * Math.random());
 
     this.mesh = new THREE.Mesh(particleGeometry, particleMaterial);
-    this.mesh.position.set(10 * Math.random(), 10 * Math.random(), 30 + 10 * Math.random());
+    this.collisionBox = new THREE.Box3().setFromObject(this.mesh);
+    this.mesh.position.set(10 * Math.random(), 10 * Math.random(), 10 * Math.random());
 
     scene.add(this.mesh);
 
@@ -86,34 +95,22 @@ function Particle() {
 
     this.update = function () {
         this.mesh.position.add(this.velocity);
-        if (this.mesh.position.x > 25) {
-            this.velocity.x *= -1;
-            impulses[0] += this.impulse(this.velocity.x);
-        }
-
-        if (this.mesh.position.x < -15) {
-            this.velocity.x *= -1;
-            impulses[1] += this.impulse(this.velocity.x);
-        }
-
-        if (this.mesh.position.y > topMesh.mesh.position.y - 10) {
-            this.velocity.y *= -1;
-            impulses[2] += this.impulse(this.velocity.y);
-        }
-
-        if (this.mesh.position.y < -10) {
-            this.velocity.y *= -1;
-            impulses[3] += this.impulse(this.velocity.y);
-        }
-
-        if (this.mesh.position.z > 50) {
-            this.velocity.z *= -1;
-            impulses[4] += this.impulse(this.velocity.z);
-        }
-
-        if (this.mesh.position.z < -10) {
-            this.velocity.z *= -1;
-            impulses[5] += this.impulse(this.velocity.z);
+        this.collisionBox.setFromObject(this.mesh);
+        for (let i = 0; i < 6; i++) {
+            if (this.collisionBox.intersectsBox(colliders[i])) {
+                if (i == 0 || i == 5) {
+                    this.velocity.y *= -1;
+                    impulses[i] += 2 * this.impulse(this.velocity.y);
+                }
+                if (i == 1 || i == 2) {
+                    this.velocity.x *= -1;
+                    impulses[i] += 2 * this.impulse(this.velocity.x);
+                }
+                if (i == 3 || i == 4) {
+                    this.velocity.z *= -1;
+                    impulses[i] += 2 * this.impulse(this.velocity.z);
+                }
+            }
         }
     }
 }
@@ -123,50 +120,45 @@ function createBoxes() {
     var rlWall = new THREE.BoxGeometry(10, 50, 50);
     var udWall = new THREE.BoxGeometry(50, 50, 10);
 
-    var singleGeometry = new THREE.Geometry();
-
-    var floorMesh = new THREE.Mesh(floor);
-    var rlMesh = new THREE.Mesh(rlWall);
-    var lMesh = new THREE.Mesh(rlWall);
-
-    var uMesh = new THREE.Mesh(udWall);
-    var dMesh = new THREE.Mesh(udWall);
-
-    floorMesh.position.set(0, 0, 0);
-    rlMesh.position.set(30, 20, 0);
-    lMesh.position.set(-30, 20, 0);
-    uMesh.position.set(0, 20, -20);
-    dMesh.position.set(0, 20, 20);
-
-    floorMesh.updateMatrix();
-    singleGeometry.merge(floorMesh.geometry, floorMesh.matrix);
-
-    rlMesh.updateMatrix();
-    singleGeometry.merge(rlMesh.geometry, rlMesh.matrix);
-
-    lMesh.updateMatrix();
-    singleGeometry.merge(lMesh.geometry, lMesh.matrix);
-
-    uMesh.updateMatrix();
-    singleGeometry.merge(uMesh.geometry, uMesh.matrix);
-
-    dMesh.updateMatrix();
-    singleGeometry.merge(dMesh.geometry, dMesh.matrix);
-
-    //singleGeometry.merge(topMesh.geometry, topMesh.matrix);
-
     var material = new THREE.MeshPhongMaterial({
         color: 0xFF0000,
         transparent: true
     });
     material.opacity = 0.5;
-    var mesh = new THREE.Mesh(singleGeometry, material);
-    scene.add(mesh);
+
+    var floorMesh = new THREE.Mesh(floor, material);
+    var rlMesh = new THREE.Mesh(rlWall, material);
+    var lMesh = new THREE.Mesh(rlWall, material);
+
+    var uMesh = new THREE.Mesh(udWall, material);
+    var dMesh = new THREE.Mesh(udWall, material);
+
+    floorMesh.position.set(0, -15, -15);
+    rlMesh.position.set(30, 5, -15);
+    lMesh.position.set(-30, 5, -15);
+    uMesh.position.set(0, 5, -35);
+    dMesh.position.set(0, 5, 10);
+
+    floorMesh.updateMatrix();
+
+    rlMesh.updateMatrix();
+    lMesh.updateMatrix();
+    uMesh.updateMatrix();
+    dMesh.updateMatrix();
+
+    scene.add(rlMesh);
+    scene.add(lMesh);
+    scene.add(uMesh);
+    scene.add(dMesh);
+    scene.add(floorMesh);
+
+    colliders.push(new THREE.Box3().setFromObject(floorMesh));
+    colliders.push(new THREE.Box3().setFromObject(rlMesh));
+    colliders.push(new THREE.Box3().setFromObject(lMesh));
+    colliders.push(new THREE.Box3().setFromObject(uMesh));
+    colliders.push(new THREE.Box3().setFromObject(dMesh));
 
     topMesh = new TopMesh();
-
-    mesh.position.set(0, -15, 15);
-    mesh.scale.set(1.0, 1.1, 1.7);
 }
 
 function createLight() {
