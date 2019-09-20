@@ -1,5 +1,6 @@
 var NUM_OF_PARTICLES = 1;
-let g = -0.001;
+let g = -0.005;
+let temperature = 50;
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
@@ -9,7 +10,7 @@ document.body.appendChild(renderer.domElement);
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth * 0.7 / window.innerHeight, 0.01, 3000);
 
-const particleGeometry = new THREE.SphereGeometry(1, 1, 1);
+const particleGeometry = new THREE.SphereGeometry(1.0, 1.0, 1.0);
 const particleMaterial = new THREE.MeshBasicMaterial();
 
 camera.position.z = 200;
@@ -31,7 +32,7 @@ let topMesh;
 
 class TopMesh {
     constructor() {
-        this.mass = 200;
+        this.mass = 500;
         this.velocity = new THREE.Vector3(0, 0, 0);
         this.acceleration = new THREE.Vector3(0, g, 0);
         this.floor = new THREE.BoxGeometry(50, 10, 50);
@@ -64,7 +65,7 @@ class TopMesh {
             }
         };
         //this.mesh.position.set(0, -15, 15);
-        this.mesh.scale.set(0.9, 0.7, 1.0);
+        this.mesh.scale.set(1.3, 1.3, 1.3);
         scene.add(this.mesh);
     }
 }
@@ -78,10 +79,13 @@ class Particle {
         this.mesh.position.set(10 * Math.random(), 10 * Math.random(), 10 * Math.random());
         scene.add(this.mesh);
         this.impulse = function (v) {
-            return Math.abs(this.mass * v);
+            return Math.abs(this.mass * v * temperature);
         };
         this.update = function () {
-            this.mesh.position.add(this.velocity);
+            //this.mesh.position.add(this.velocity.multiplyScalar(temperature / 100.0));
+            this.mesh.position.x += this.velocity.x * temperature / 100.0;
+            this.mesh.position.y += this.velocity.y * temperature / 100.0;
+            this.mesh.position.z += this.velocity.z * temperature / 100.0;
             this.collisionBox.setFromObject(this.mesh);
             for (let i = 0; i < 6; i++) {
                 if (this.collisionBox.intersectsBox(colliders[i])) {
@@ -195,12 +199,19 @@ function initInput() {
         removeAllParticles();
         NUM_OF_PARTICLES = particlesInput.value;
         createParticles();
+        labelNumOfParticles.innerHTML = NUM_OF_PARTICLES;
     }
 
     const rangeOfAc = document.getElementById("rangeOfAc");
     rangeOfAc.onchange = function () {
         g = this.value / 1000 * (-1);
     }
+
+    const rangeOfTemperature = document.getElementById("rangeOfTemp");
+    const sumbitTemp = document.getElementById("submitTemp");
+    sumbitTemp.addEventListener("onclick", () => {
+        temperature = rangeOfTemperature.value;
+    });
 }
 
 function initImpulses() {
@@ -228,8 +239,6 @@ initImpulses();
 
 requestAnimationFrame(function animate() {
     requestAnimationFrame(animate);
-    //theta += 0.01;
-    //camera.position.set(10 * Math.sin(theta), 10 * Math.cos(theta), 25);
     for (var i = particles.length - 1; i >= 0; i--) {
         if (particles[i])
             particles[i].update();
